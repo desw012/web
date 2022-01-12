@@ -86,8 +86,8 @@ const workspace = new (function(){
 
     const fnMinimum = function(e){
         const targetWindow = e.target.closest('.window');
-
         const id = targetWindow.dataset.dataid;
+
         itemDataMap[id].restoreData = {
             top : targetWindow.style.top,
             left : targetWindow.style.left,
@@ -104,10 +104,20 @@ const workspace = new (function(){
 
     const fnRestore = function(e){
         const targetWindow = e.target.closest('.window');
+        const id = targetWindow.dataset.dataid;
+
+        targetWindow.style.top = itemDataMap[id].restoreData.top;
+        targetWindow.style.left = itemDataMap[id].restoreData.left;
+        targetWindow.style.width = itemDataMap[id].restoreData.width;
+        targetWindow.style.height = itemDataMap[id].restoreData.height;
+
     }
     const fnClose = function(e){
         const targetWindow = e.target.closest('.window');
+        const id = targetWindow.dataset.dataid;
 
+        itemDataMap[id] = undefined;
+        targetWindow.parentElement.removeChild(targetWindow);
     }
 
     const resizeEvent  = (function(){
@@ -305,6 +315,13 @@ const workspace = new (function(){
     function createContent(window, id, name, data){
         const content = document.createElement('div');
         content.classList.add('content');
+
+        const iframe = document.createElement('iframe');
+        iframe.src = 'http://gw.bizwell.co.kr';
+        iframe.style.width = '100%';
+        iframe.style.height = '100%';
+        iframe.style.border = 'none';
+        content.appendChild(iframe);
 
         window.appendChild(content);
     }

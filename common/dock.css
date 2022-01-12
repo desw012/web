@@ -1,6 +1,8 @@
 #dock { position:  absolute; user-select: none; }
 #dock div.wrap { display: flex; width: fit-content; height: fit-content; margin: 5px auto; justify-content: center; align-items: center; border-radius: 10px; background-color: rgba(220, 220, 220, 0.9) }
-#dock div.item { display: flex; width: 50px; height: 50px; justify-content: center; align-items: center;}
+#dock div.item-wrap { margin: 5px }
+#dock div.item { display: flex; width: 50px; height: 50px; justify-content: center; align-items: center; cursor: pointer}
+#dock div.item:hover { background-color: rgba(255, 255, 255, 0.3) }
 #dock div.item > a {  }
 
 /** POSITION **/
@@ -13,8 +15,8 @@
 #dock.left div.wrap,
 #dock.right div.wrap { flex-direction: column; }
 
-#dock div.item-bar { border: 0px solid rgba(0, 0, 0, 0.3); margin: 3px; padding: 1px; }
+#dock div.item-bar { border: 0px solid rgba(0, 0, 0, 0.3); padding: 1px; }
 #dock.top div.item-bar,
-#dock.bottom div.item-bar { width: 1px; height: 40px; border-left-width: 1px; cursor: row-resize; }
+#dock.bottom div.item-bar { width: 1px; height: 50px; border-left-width: 1px; cursor: row-resize; }
 #dock.left div.item-bar,
-#dock.right div.item-bar { width: 40px; height: 1px; border-top-width: 1px; cursor: col-resize; }
+#dock.right div.item-bar { width: 50px; height: 1px; border-top-width: 1px; cursor: col-resize; }

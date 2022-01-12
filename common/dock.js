@@ -1,30 +1,21 @@
 const dock = new (function(){
-    const dock = this;
+    const _this = this;
+    const root = document.getElementById("dock");
 
     const POSITION = ['top', 'right', 'bottom', 'left'];
-
-    const root = document.getElementById("dock");
     const opt = {
         iconSize : 40,
         position : 'bottom'
     }
-    root.classList.add(opt.position);
 
-    function eventInit() {
+    const itemDataMap = {}
 
-    }
-
-    const EVENT = (function(){
-
-    })();
-
+    //== 내부 액션 처리 =================================
     const itemBarEvent = (function(){
         const minSize = 20;
         const maxSize = 100;
         let dim = undefined;
-        let isDrag = false;
         let isVertical  = false;
-        let barSelectPositionRadio = undefined;
         let prevScreenX = undefined;
         let prevScreenY = undefined;
         let iconSize = undefined;
@@ -32,22 +23,14 @@ const dock = new (function(){
         function mousedown(e) {
             if(e.buttons === 1) {
                 isVertical = opt.position === 'top' || opt.position === 'bottom' ? true : false;
-
                 initial();
-                if(isVertical){
-                    barSelectPositionRadio = e.offsetY / e.target.height;
-                } else {
-                    barSelectPositionRadio = e.offsetX / e.target.width;
-                }
+                iconSize = opt.iconSize;
                 prevScreenX = e.screenX;
                 prevScreenY = e.screenY;
             }
         }
 
         function initial() {
-            isDrag = true;
-            iconSize = opt.iconSize;
-
             dim = document.createElement('div');
             dim.style.position = 'absolute';
             dim.style.top = '0px';
@@ -65,7 +48,6 @@ const dock = new (function(){
             document.body.removeChild(dim);
 
             dim = undefined;
-            isDrag = false;
             prevScreenX = undefined;
             prevScreenY = undefined;
             iconSize = undefined;
@@ -76,9 +58,9 @@ const dock = new (function(){
         }
 
         function mousemove(e) {
-            if(isDrag){
-
+            if(e.buttons === 1){
                 let offset = isVertical ? prevScreenY - e.screenY : e.screenX - prevScreenX;
+
                 if (offset !== 0) {
                     iconSize += offset
                     if(iconSize > maxSize){
@@ -101,33 +83,36 @@ const dock = new (function(){
             mousedown : mousedown
         }
     })();
+    //== 내부 액션 처리 =================================
 
+    //== 초기화 =================================
     function init(){
+        root.classList.add(opt.position);
+        root.addEventListener('contextmenu', (e)=>{ e.preventDefault() });
+
         const wrap = document.createElement('div');
         wrap.classList.add('wrap');
         root.appendChild(wrap);
 
-        const item1 = document.createElement('div');
-        item1.classList.add("item");
-        item1.innerText = '가'
-        wrap.appendChild(item1);
-
-        const item2 = document.createElement('div');
-        item2.classList.add("item");
-        item2.innerText = '나'
-        wrap.appendChild(item2);
-
-        const itemBar = document.createElement('div');
-        itemBar.classList.add("item-bar");
-        itemBar.addEventListener('mousedown', itemBarEvent.mousedown);
-        wrap.appendChild(itemBar);
-
-        const item3 = document.createElement('div');
-        item3.classList.add("item");
-        item3.innerText = '다'
-        wrap.appendChild(item3);
+        pushItem('1', '가', { });
+        pushItem('2', '나', { });
+        pushItemBar()
+        pushItem('3','다', { });
+        pushItemBar()
+        pushItem('4','work', { });
     }
 
+    function initMessageHandler(){
+        const allowOrigin = ["http://localhost:63342", "http://192.168.1.161:8080"]
+        window.addEventListener("message", (e)=>{
+            if(allowOrigin.indexOf(e.origin) === -1) return;
+
+            console.log(e);
+        }, false);
+    }
+    //== 초기화 END =================================
+
+    //== 액션 제어 =================================
     function changePosition(pos) {
         let position = undefined;
         if(typeof pos === 'string' && POSITION.indexOf(pos) > -1){
@@ -153,13 +138,13 @@ const dock = new (function(){
             case 'top':
             case 'bottom':
                 root.querySelectorAll('div.wrap div.item-bar').forEach(el=>{
-                    el.style.height = (size - 10) + 'px';
+                    el.style.height = size + 'px';
                 });
                 break;
             case 'left':
             case 'right':
                 root.querySelectorAll('div.wrap div.item-bar').forEach(el=>{
-                    el.style.width = (size - 10) + 'px';
+                    el.style.width = size + 'px';
                 });
                 break;
             default:
@@ -167,18 +152,46 @@ const dock = new (function(){
         }
     }
 
+    function pushItem(id, name, data){
+        const itemWrap = document.createElement('div');
+        itemWrap.classList.add('item-wrap');
+        root.querySelector('div.wrap').appendChild(itemWrap);
+
+        const item = document.createElement('div');
+        item.classList.add("item");
+        item.dataset.dataid = id;
+        item.title = name;
+        item.innerText = name;
+        itemWrap.appendChild(item);
+
+        itemDataMap[id] = data;
+    }
+
+    function pushItemBar(){
+        const itemWrap = document.createElement('div');
+        itemWrap.classList.add('item-wrap');
+        root.querySelector('div.wrap').appendChild(itemWrap);
+
+        const itemBar = document.createElement('div');
+        itemBar.classList.add("item-bar");
+        itemBar.addEventListener('mousedown', itemBarEvent.mousedown);
+        itemWrap.appendChild(itemBar);
+    }
+    //== 액션 제어 END =================================
+
+
+    //==외부 인터페이스 =================================
     function push(){
 
     }
-
-    function remove(){
+    function remove(id){
 
     }
+    //==외부 인터페이스 END =================================
 
     init();
+    initMessageHandler();
     return {
-        resizeIcon : resizeIcon,
-        changePosition : changePosition,
         push : push,
         remove : remove
     }
