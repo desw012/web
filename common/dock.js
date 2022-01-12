@@ -32,6 +32,7 @@ const dock = new (function(){
 
         function initial() {
             dim = document.createElement('div');
+            dim.classList.add('dim');
             dim.style.position = 'absolute';
             dim.style.top = '0px';
             dim.style.left = '0px';
@@ -83,6 +84,15 @@ const dock = new (function(){
             mousedown : mousedown
         }
     })();
+
+    const itemAction = function(e){
+        const targetWindow = e.target.closest('.item');
+        const id = targetWindow.dataset.dataid;
+        const data = itemDataMap[id];
+        if(data.action && typeof data.action === 'function'){
+            data.action.call(e.target, data);
+        }
+    }
     //== 내부 액션 처리 =================================
 
     //== 초기화 =================================
@@ -94,12 +104,8 @@ const dock = new (function(){
         wrap.classList.add('wrap');
         root.appendChild(wrap);
 
-        pushItem('1', '가', { });
-        pushItem('2', '나', { });
-        pushItemBar()
-        pushItem('3','다', { });
-        pushItemBar()
-        pushItem('4','work', { });
+        createDefaultItem();
+        initMessageHandler();
     }
 
     function initMessageHandler(){
@@ -109,6 +115,12 @@ const dock = new (function(){
 
             console.log(e);
         }, false);
+    }
+
+    function createDefaultItem(){
+        pushItem("DASHBOARD", 'A', { })
+        pushItem("SEARCH", 'S', { })
+        pushItemBar()
     }
     //== 초기화 END =================================
 
@@ -162,6 +174,7 @@ const dock = new (function(){
         item.dataset.dataid = id;
         item.title = name;
         item.innerText = name;
+        if(data.action)  item.addEventListener('click', itemAction)
         itemWrap.appendChild(item);
 
         itemDataMap[id] = data;
@@ -181,17 +194,15 @@ const dock = new (function(){
 
 
     //==외부 인터페이스 =================================
-    function push(){
-
+    function push(id, name, data){
+        pushItem(id, name, data);
     }
     function remove(id){
 
     }
     //==외부 인터페이스 END =================================
-
-    init();
-    initMessageHandler();
     return {
+        init : init,
         push : push,
         remove : remove
     }

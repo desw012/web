@@ -5,6 +5,8 @@ const workspace = new (function(){
     const opt = {
 
     }
+
+    let active_zIndex = 1000;
     const initData = {
         viewStatus : 'max'
     }
@@ -29,11 +31,13 @@ const workspace = new (function(){
 
         function initial() {
             dim = document.createElement('div');
+            dim.classList.add('dim');
             dim.style.position = 'absolute';
             dim.style.top = '0px';
             dim.style.left = '0px';
             dim.style.bottom = '0px';
             dim.style.right = '0px';
+            dim.style.zIndex = `0`;
 
             dim.addEventListener('mousemove', mousemove);
             dim.addEventListener('mouseup', mouseup);
@@ -119,6 +123,12 @@ const workspace = new (function(){
         itemDataMap[id] = undefined;
         targetWindow.parentElement.removeChild(targetWindow);
     }
+    const fnFocus = function (e){
+        const targetWindow = e.currentTarget;
+        const id = targetWindow.dataset.dataid;
+
+        active(id);
+    }
 
     const resizeEvent  = (function(){
         let type = undefined;
@@ -153,6 +163,7 @@ const workspace = new (function(){
 
         function initial() {
             dim = document.createElement('div');
+            dim.classList.add('dim');
             dim.style.position = 'absolute';
             dim.style.top = '0px';
             dim.style.left = '0px';
@@ -238,15 +249,7 @@ const workspace = new (function(){
             mousedown : mousedown
         }
     })();
-    //== 내부 액션 처리 END =================================
 
-    //== 초기화 =================================
-    function init(){
-        createWindow("1", "title", {});
-    }
-    //== 초기화 END =================================
-
-    //== 액션 제어 =================================
     function createWindow(id, name, data){
         const window = document.createElement('div');
         window.classList.add('window');
@@ -254,6 +257,7 @@ const workspace = new (function(){
         window.style.width = '400px';
         window.style.height = '400px';
         window.dataset.dataid = id;
+        window.addEventListener('mousedown', fnFocus);
 
         createTitleBar(window, id, name, data);
         createResizeBar(window, id, name, data);
@@ -262,6 +266,7 @@ const workspace = new (function(){
         root.appendChild(window);
         itemDataMap[id] = data;
     }
+
     function createTitleBar(window, id, name, data){
         const titleBar = document.createElement('div');
         titleBar.classList.add('title-bar');
@@ -317,7 +322,9 @@ const workspace = new (function(){
         content.classList.add('content');
 
         const iframe = document.createElement('iframe');
-        iframe.src = 'http://gw.bizwell.co.kr';
+        iframe.name = id;
+        iframe.title = name;
+        iframe.src = 'http://192.168.1.161:8080/xclickr31_dev';
         iframe.style.width = '100%';
         iframe.style.height = '100%';
         iframe.style.border = 'none';
@@ -325,11 +332,39 @@ const workspace = new (function(){
 
         window.appendChild(content);
     }
+    //== 내부 액션 처리 END =================================
+
+    //== 초기화 =================================
+    function init(){
+        initMessageHandler();
+    }
+
+    function initMessageHandler(){
+        const allowOrigin = ["http://localhost:63342", "http://192.168.1.161:8080"]
+        window.addEventListener("message", (e)=>{
+            if(allowOrigin.indexOf(e.origin) === -1) return;
+
+            if(typeof e.data === 'string' && e.data === 'hello'){
+                e.source.postMessage('welcome', e.origin);
+            } else if(typeof e.data === 'object' && e.data.type === 'focus'){
+                active(e.data.name);
+            }
+        }, false);
+    }
+    //== 초기화 END =================================
+
+    //== 액션 제어 =================================
+    function active(id){
+        const window = document.querySelector(`div.window[data-dataid='${id}']`);
+        if(Number(window.style.zIndex) === active_zIndex) return;
+        window.style.zIndex = `${(active_zIndex += 1000)}`;
+    }
     //== 액션 제어 END =================================
 
     //== 외부 인터페이스 =================================
-    function push(){
-
+    function push(id, name, data){
+        createWindow(id, name, data);
+        active(id);
     }
 
     function remove(){
@@ -338,8 +373,8 @@ const workspace = new (function(){
     //== 외부 인터페이스 END =================================
 
 
-    init();
     return {
+        init : init,
         push : push,
         remove : remove
     }

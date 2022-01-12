@@ -3,15 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <link href="common/style.css" rel="stylesheet" />
+    <link href="common/layout.css" rel="stylesheet" />
+    <link href="common/menubar.css" rel="stylesheet" />
     <link href="common/dock.css" rel="stylesheet" />
     <link href="common/workspace.css" rel="stylesheet" />
 
 </head>
 <body>
-    <div id="workspace"></div>
-    <div id="dock"></div>
+    <div class="layout">
+        <div id="menubar"></div>
+        <div id="workspace"></div>
+        <div id="dock"></div>
+    </div>
     <script src="common/workspace.js"></script>
+    <script src="common/menubar.js"></script>
     <script src="common/dock.js"></script>
+    <script src="common/setup.js"></script>
 </body>
 </html>
