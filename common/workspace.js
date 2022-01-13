@@ -1,5 +1,4 @@
-const workspace = new (function(){
-    const _this = this;
+const workspace = (function(){
     const root = document.getElementById("workspace");
 
     const opt = {

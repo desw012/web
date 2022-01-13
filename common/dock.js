@@ -1,5 +1,4 @@
-const dock = new (function(){
-    const _this = this;
+const dock = (function(){
     const root = document.getElementById("dock");
 
     const POSITION = ['top', 'right', 'bottom', 'left'];
@@ -176,6 +175,10 @@ const dock = new (function(){
         item.innerText = name;
         if(data.action)  item.addEventListener('click', itemAction)
         itemWrap.appendChild(item);
+
+        const activeBar = document.createElement('div');
+        activeBar.classList.add('active-bar');
+        itemWrap.appendChild(activeBar);
 
         itemDataMap[id] = data;
     }
