@@ -32,10 +32,14 @@ const task = (function (o, properties){
     //== 초기화 END =================================
 
     //== 내부 액션 처리 =================================
-    function execute(type, data){
+    function createTask(gid, data){
         if(data.windowOption){
             const winObj = new WindowObject(wid++, data.id, data);
         }
+    }
+    function getTaskByGID(gid){
+        return Object.values(taskMap)
+            .find((task)=>{ return task.gid === gid });
     }
     //== 내부 액션 처리 END =================================
 
@@ -48,6 +52,14 @@ const task = (function (o, properties){
     //== 외부 인터페이스 =================================
     function init(){
         constructor();
+    }
+    function newInstance(gid){
+        const task = getTaskByGID(gid);
+        if(task){
+            return task;
+        }else {
+            return createTask(gid, {windowOption: {}});
+        }
     }
     //== 외부 인터페이스 END =================================
 
@@ -71,6 +83,7 @@ const task = (function (o, properties){
 
     return {
         init : init,
+        newInstance : newInstance,
         MESSAGE_TYPE : MESSAGE_TYPE
     }
 })();

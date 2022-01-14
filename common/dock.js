@@ -174,7 +174,7 @@ const dock = (function(){
         item.dataset.dataid = id;
         item.title = name;
         item.innerText = name;
-        if(data.action)  item.addEventListener('click', itemAction)
+        item.addEventListener('click', itemAction)
         itemWrap.appendChild(item);
 
         const activeBar = document.createElement('div');

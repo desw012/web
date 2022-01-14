@@ -1,5 +1,8 @@
 const workspace = (function(){
     const root = document.getElementById("workspace");
+    const MESSAGE_TYPE = {
+        'FOCUS' : 'workspace.focus',
+    }
 
     const opt = {
 
@@ -339,7 +342,7 @@ const workspace = (function(){
     }
 
     function initMessageHandler(){
-        const allowOrigin = ["http://localhost:63342", "http://192.168.1.161:8080"]
+
         window.addEventListener("message", (e)=>{
             if(allowOrigin.indexOf(e.origin) === -1) return;
 
@@ -375,6 +378,7 @@ const workspace = (function(){
     return {
         init : init,
         push : push,
-        remove : remove
+        remove : remove,
+        MESSAGE_TYPE : MESSAGE_TYPE
     }
 })();
