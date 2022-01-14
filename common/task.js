@@ -32,8 +32,10 @@ const task = (function (o, properties){
     //== 초기화 END =================================
 
     //== 내부 액션 처리 =================================
-    function execute(actionType, actionData, actionOption){
-
+    function execute(type, data){
+        if(data.windowOption){
+            const winObj = new WindowObject(wid++, data.id, data);
+        }
     }
     //== 내부 액션 처리 END =================================
 

@@ -88,8 +88,9 @@ const dock = (function(){
         const targetWindow = e.target.closest('.item');
         const id = targetWindow.dataset.dataid;
         const data = itemDataMap[id];
-        if(data.action && typeof data.action === 'function'){
-            data.action.call(e.target, data);
+
+        if(data.actionMessage){
+            window.postMessage({type: data.actionMessage, data : data}, window.location.origin);
         }
     }
     //== 내부 액션 처리 =================================
